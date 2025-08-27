@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Build with action
-        uses: jackestar/esp8266-rtos-sdk-action@v0
+        uses: jackestar/esp8266-rtos-sdk-action@V0
         with:
           install-deps: 'true'
 
