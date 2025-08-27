@@ -1,0 +1,80 @@
+name: "ESP8266 RTOS SDK Build"
+author: Jackestar
+description: "Composite action to build ESP8266 RTOS SDK firmware on Ubuntu runners. Installs dependencies, clones the SDK, runs the SDK installer and builds using make."
+
+inputs:
+  sdk-ref:
+    description: "git ref (branch/tag/commit) to checkout for ESP8266_RTOS_SDK"
+    required: false
+    default: "master"
+  install-deps:
+    description: "Install system dependencies (apt). Set to 'false' if the runner is already provisioned."
+    required: false
+    default: "true"
+  make-target:
+    description: "Optional make target to build (e.g. flash, clean). Empty runs default 'make'."
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Restore SDK, pip and ccache caches
+      uses: actions/cache@v4
+      with:
+        path: |
+          $HOME/esp8266-rtos-sdk
+          ~/.cache/pip
+          ~/.ccache
+          ~/
+        # include sdk-ref so a change in SDK ref invalidates the SDK cache
+        key: esp8266-${{ runner.os }}-sdk-${{ inputs.sdk-ref }}
+        restore-keys: |
+          esp8266-${{ runner.os }}-sdk-
+
+
+    - name: Install dependencies
+      if: ${{ inputs.install-deps == 'true' }}
+        if ! . "$IDF_PATH/export.sh"; then
+          echo "Error: Failed to source ESP8266 RTOS SDK export script"
+          exit 1
+        fi
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git wget flex bison gperf python3 python3-pip cmake ninja-build ccache libffi-dev libssl-dev dfu-util unzip xz-utils
+
+    - name: Install ESP8266 RTOS SDK
+      shell: bash
+      run: |
+        # If cache restored the SDK directory exists; skip clone/install in that case.
+        if [ -d "$HOME/esp8266-rtos-sdk" ]; then
+          echo "ESP8266 RTOS SDK found in cache at $HOME/esp8266-rtos-sdk - skipping clone and install"
+        else
+          echo "Cloning ESP8266 RTOS SDK (ref: '${{ inputs.sdk-ref }}')"
+          if ! git clone --recursive https://github.com/espressif/ESP8266_RTOS_SDK.git "$HOME/esp8266-rtos-sdk" --branch "${{ inputs.sdk-ref }}"; then
+            echo "Failed to clone ESP8266 RTOS SDK with ref '${{ inputs.sdk-ref }}'. Cloning default branch instead."
+            git clone --recursive https://github.com/espressif/ESP8266_RTOS_SDK.git "$HOME/esp8266-rtos-sdk"
+            cd "$HOME/esp8266-rtos-sdk"
+            echo "Warning: Using default branch instead of requested ref '${{ inputs.sdk-ref }}'"
+          fi
+          export IDF_PATH=$HOME/esp8266-rtos-sdk
+          python3 -m pip install --upgrade pip
+          # run the SDK installer only when we freshly cloned (or cache miss)
+          $IDF_PATH/install.sh
+        fi
+
+    - name: Build firmware
+      shell: bash
+      run: |
+        export IDF_PATH=$HOME/esp8266-rtos-sdk
+        cd "$GITHUB_WORKSPACE"
+        . "$IDF_PATH/export.sh"
+        if [ -n "${{ inputs.make-target }}" ]; then
+          make ${{ inputs.make-target }}
+        else
+          make
+        fi
+        fi
