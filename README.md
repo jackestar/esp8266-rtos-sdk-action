@@ -7,7 +7,7 @@ This repository provides a composite GitHub Action that installs the ESP8266 RTO
 Add a step in your workflow to call this action (uses the repo or a published action name):
 
 ```yaml
-uses: jackestar/esp8266-rtos-sdk-action@V0
+uses: jackestar/esp8266-rtos-sdk-action@v1
 with:
   sdk-ref: 'master'        # optional
   install-deps: 'true'     # optional

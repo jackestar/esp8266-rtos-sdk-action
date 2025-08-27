@@ -39,7 +39,7 @@ runs:
     - name: Install dependencies
       if: ${{ inputs.install-deps == 'true' }}
         if ! . "$IDF_PATH/export.sh"; then
-          echo "Error: Failed to source ESP8266 RTOS SDK export script"
+          echo "Error Failed to source ESP8266 RTOS SDK export script"
           exit 1
         fi
       run: |
