@@ -9,9 +9,9 @@ Add a step in your workflow to call this action (uses the repo or a published ac
 ```yaml
 uses: jackestar/esp8266-rtos-sdk-action@v1
 with:
-  sdk-ref: 'master'        # optional
+  sdk-ref: 'master'        # optional, e.g. 'release/v3.4'
   install-deps: 'true'     # optional
-  make-target: ''          # optional, e.g. 'clean' or 'flash'
+  make-target: ''          # optional, e.g. 'clean'
 ```
 
 ## Inputs
@@ -24,7 +24,18 @@ with:
 
 See `.github/workflows/example.yml` for a simple example that runs on `ubuntu-latest` and uploads build artifacts.
 
+## Test
+
+Last Test with [ESP8266_RTOS_SDK](https://github.com/espressif/ESP8266_RTOS_SDK):
+
+**Branch:** master **Commit:** [d412ac6](https://github.com/espressif/ESP8266_RTOS_SDK/commit/d412ac601befc4dd024d2d2adcfaa319c7463e36) *Apr 18 2025*
+
+
 ## Notes
 
 - This action executes the SDK's `install.sh` and sources `export.sh`. The SDK installer may modify the runner environment and download additional toolchains.
 - The `Makefile` files and the `main` folder are for testing purposes only.
+
+## Licence 
+
+[MIT Licence](LICENSE)

@@ -1,6 +1,10 @@
 name: "ESP8266 RTOS SDK Build"
 author: Jackestar
-description: "Composite action to build ESP8266 RTOS SDK firmware on Ubuntu runners. Installs dependencies, clones the SDK, runs the SDK installer and builds using make."
+description: "Composite action to build ESP8266 RTOS SDK firmware on Ubuntu runners. Installs dependencies, clones the SDK."
+
+branding:
+  icon: 'box'
+  color: 'red'
 
 inputs:
   sdk-ref:
