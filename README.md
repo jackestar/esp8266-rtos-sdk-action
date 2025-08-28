@@ -27,3 +27,4 @@ See `.github/workflows/example.yml` for a simple example that runs on `ubuntu-la
 ## Notes
 
 - This action executes the SDK's `install.sh` and sources `export.sh`. The SDK installer may modify the runner environment and download additional toolchains.
+- The `Makefile` files and the `main` folder are for testing purposes only.
